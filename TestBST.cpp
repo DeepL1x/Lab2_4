@@ -43,6 +43,8 @@ bool testBinarySearchTree()
     {
         myTree.insert(dataToInsert[i]);
     }
+//    Data MAX = Data(), MIN = Data();
+//    myTree.eraseRange(MIN, MAX);
     int myInsertSize = myTree.size();
     int myTreeHeight = myTree.height();
     int optimalTreeHeight = log2(myInsertSize) + 1;
@@ -68,6 +70,7 @@ bool testBinarySearchTree()
     {
         stlTree.insert(dataToInsert[i]);
     }
+//    stlTree.erase(stlTree.lower_bound(MIN), stlTree.lower_bound(MAX));
     int stlInsertSize = stlTree.size();
     for (int i = 0; i < iters; i++)
     {

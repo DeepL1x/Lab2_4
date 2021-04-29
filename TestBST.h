@@ -6,6 +6,7 @@
 #define LAB2_4_TESTBST_H
 
 #include <set>
+#include <iterator>
 #include <vector>
 #include <iostream>
 #include <cstdlib>

@@ -39,10 +39,10 @@ struct BST {
     void insert (const Data& aKey);
     Node *insert (Node *aNode, const Data& aKey);
 
-    Data minimum (Node *aNode);
+    Node *minimum (Node *aNode);
 
     void erase (const Data& aData);
-    Node *erase (Node *root, const Data& aKey);
+    Node *erase (Node *aNode, const Data& aKey);
 
     bool find (const Data& aData);
     Node *find (Node* aNode, const Data& aKey);
@@ -53,7 +53,10 @@ struct BST {
     int findInRange(const Data& aMin, const Data& aMax);
     void findInRange(Node *aNode, int &counter, const Data& aMin, const Data& aMax);
 
-
+    void eraseRange(const Data& aMin, const Data& aMax);
+    void eraseInRange(Node *aNode, const Data& aMin, const Data& aMax);
+    void deteleTree(Node *aNode, Data aKey);
+    Node *eraseRange(Node *aNode, const Data& aMin, const Data& aMax);
     int height();
     int height(Node* aNode);
 
