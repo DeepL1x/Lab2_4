@@ -16,6 +16,15 @@ Data::Data(int aTotalMass, int aDaysToSpoilage, int aCountOfRaisins) {
     countOfRaisins = aCountOfRaisins;
 }
 
+SplittedBST::SplittedBST() {
+    left = nullptr;
+    right = nullptr;
+}
+
+SplittedBST::SplittedBST(Node *aLeft, Node *aRight) {
+    left = aLeft;
+    right = aRight;
+}
 //bool Data::operator < (const Data &aSecond) const {
 //    if (daysToSpoilage < aSecond.daysToSpoilage)
 //        return daysToSpoilage < aSecond.daysToSpoilage;
@@ -50,26 +59,26 @@ bool Data::operator == (const Data &aSecond) const {
         (3 * aSecond.daysToSpoilage + 2 * aSecond.totalMass + aSecond.countOfRaisins);
 }
 
-Node::Node(Data aData) {
-    data = aData;
+Node::Node(Data aKey) {
+    data = aKey;
 }
 
-void BST::insert(Data aData) {
-    root = insert(root, aData);
+void BST::insert(const Data& aKey) {
+    root = insert(root, aKey);
 }
 
-Node* BST::insert(Node *aNode, Data aData) {
+Node* BST::insert(Node *aNode, const Data& aKey) {
     if (aNode == nullptr) {
         realsize++;
-        Node *temp = new Node(aData);
+        Node *temp = new Node(aKey);
         return temp;
     }
-    else if (aNode->data > aData)
-        aNode->left = insert(aNode->left, aData);
-    else if (aNode->data < aData)
-        aNode->right = insert(aNode->right, aData);
-    else if (aNode->data == aData)
-        aNode->data = aData;
+    else if (aNode->data > aKey)
+        aNode->left = insert(aNode->left, aKey);
+    else if (aNode->data < aKey)
+        aNode->right = insert(aNode->right, aKey);
+    else if (aNode->data == aKey)
+        aNode->data = aKey;
     return aNode;
 }
 
@@ -79,18 +88,18 @@ Data BST::minimum(Node *aNode) {
     return minimum(aNode->left);
 }
 
-void BST::erase(Data aData) {
-    root = erase(root, aData);
+void BST::erase(const Data& aKey) {
+    root = erase(root, aKey);
 }
 
-Node* BST::erase(Node *aNode, Data aData) {
+Node* BST::erase(Node *aNode, const Data& aKey) {
     if (aNode == nullptr)
         return aNode;
 
-    if (aData < aNode->data)
-        aNode->left = erase(aNode->left, aData);
-    else if (aData > aNode->data)
-        aNode->right = erase(aNode->right, aData);
+    if (aKey < aNode->data)
+        aNode->left = erase(aNode->left, aKey);
+    else if (aKey > aNode->data)
+        aNode->right = erase(aNode->right, aKey);
     else if (aNode->left != nullptr && aNode->right != nullptr) {
         aNode->data = minimum(aNode->right);
         aNode->right = erase(aNode->right, aNode->data);
@@ -114,18 +123,18 @@ Node* BST::erase(Node *aNode, Data aData) {
         return aNode;
     }
 }
-bool BST::find(Data aData) {
-    Node *temp = find(root, aData);
+bool BST::find(const Data& aKey) {
+    Node *temp = find(root, aKey);
     if (temp == nullptr)
         return 0;
     return 1;
 }
-Node *BST::find(Node *aNode, Data aData) {
-    if (aNode == nullptr || aData  == aNode->data)
+Node *BST::find(Node *aNode, const Data& aKey) {
+    if (aNode == nullptr || aKey  == aNode->data)
         return aNode;
-    if (aData < aNode->data)
-        return find(aNode->left, aData);
-    return find(aNode->right, aData);
+    if (aKey < aNode->data)
+        return find(aNode->left, aKey);
+    return find(aNode->right, aKey);
 }
 
 void BST::print() {
@@ -144,21 +153,26 @@ int BST::size() {
     return realsize;
 }
 
-int BST::findInRange(Data aMin, Data aMax) {
+int BST::findInRange(const Data& aMin, const Data& aMax) {
     int counter = 0;
     findInRange(root, counter, aMin, aMax);
     return counter;
 }
 
-void BST::findInRange(Node *aNode, int &aCounter, Data aMin, Data aMax) {
-    if (aNode != nullptr) {
-        findInRange(aNode->left, aCounter, aMin, aMax);
-//        if (aMax < aNode->data)
-//            return;
-        if ((aMin < aNode->data && aNode->data < aMax) || aNode->data == aMax || aNode->data == aMin)
-            aCounter++;
-        findInRange(aNode->right,aCounter, aMin, aMax);
+void BST::findInRange(Node *aNode, int &aCounter, const Data& aMin, const Data& aMax) {
+    if (aNode == nullptr)
+        return;
+    if (aNode->data == aMin && aNode->data == aMax) {
+        aCounter++;
+        return;
     }
+    if ((aMin < aNode->data && aNode->data < aMax) || aNode->data == aMax || aNode->data == aMin) {
+        aCounter++;
+        findInRange(aNode->left, aCounter, aMin, aMax);
+        findInRange(aNode->right, aCounter, aMin, aMax);
+    } else if (aNode->data < aMin)
+        findInRange(aNode->right, aCounter, aMin, aMax);
+    else findInRange(aNode->left,aCounter, aMin, aMax);
 }
 
 int BST::height() {
@@ -178,6 +192,34 @@ int BST::height(Node* aNode) {
     }
 }
 
+SplittedBST BST::split(Node *aNode, const Data& aKey) {
+    if (aNode == nullptr) {
+        return SplittedBST();
+    }
+    else if (aKey > aNode->data){
+        SplittedBST temp = split(aNode->right, aKey);
+        aNode->right = temp.left;
+        return SplittedBST(aNode, temp.right);
+    }
+    else {
+        SplittedBST temp = split(aNode->left, aKey);
+        aNode->right = temp.right;
+        return SplittedBST(temp.left, aNode);
+    }
+}
 
-
+Node *BST::merge(Node *aLeft, Node *aRight) {
+    if (aLeft == nullptr)
+        return aRight;
+    if (aRight == nullptr)
+        return aLeft;
+    else if (aLeft->data > aRight->data){
+        aLeft->right = merge(aLeft->right, aRight);
+        return aLeft;
+    }
+    else{
+        aRight->left = merge(aLeft, aRight->left);
+        return aRight;
+    }
+}
 

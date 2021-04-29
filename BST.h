@@ -25,22 +25,41 @@ struct Node{
     Node(Data aData);
 };
 
+struct SplittedBST{
+    Node* left;
+    Node* right;
+    SplittedBST();
+    SplittedBST(Node *aLeft, Node *aRight);
+};
+
 struct BST {
     Node *root = nullptr;
     int realsize = 0;
-    void insert (Data aData);
-    Node *insert (Node *aNode, Data aData);
+
+    void insert (const Data& aKey);
+    Node *insert (Node *aNode, const Data& aKey);
+
     Data minimum (Node *aNode);
-    void erase (Data aData);
-    Node *erase (Node *root, Data aData);
-    bool find (Data aData);
-    Node *find (Node* aNode, Data aData);
+
+    void erase (const Data& aData);
+    Node *erase (Node *root, const Data& aKey);
+
+    bool find (const Data& aData);
+    Node *find (Node* aNode, const Data& aKey);
+
     void print();
     void print(Node *aNode);
-    int findInRange(Data aMin, Data aMax);
-    void findInRange(Node *aNode, int &counter, Data aMin, Data aMax);
+
+    int findInRange(const Data& aMin, const Data& aMax);
+    void findInRange(Node *aNode, int &counter, const Data& aMin, const Data& aMax);
+
+
     int height();
     int height(Node* aNode);
+
+    SplittedBST split(Node* aNode, const Data& aKey);
+    Node *merge(Node *aLeft, Node *aRight);
+
     int size();
 };
 
