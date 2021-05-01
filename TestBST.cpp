@@ -70,7 +70,8 @@ bool testBinarySearchTree()
     {
         stlTree.insert(dataToInsert[i]);
     }
-//    stlTree.erase(stlTree.lower_bound(MIN), stlTree.lower_bound(MAX));
+
+//    stlTree.erase(new set<Data>::iterator, set<Data>::iterator = MAX));
     int stlInsertSize = stlTree.size();
     for (int i = 0; i < iters; i++)
     {

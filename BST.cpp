@@ -3,7 +3,6 @@
 //
 
 #include "BST.h"
-#include <iostream>
 Data::Data() {
     totalMass = 1 + rand() % 10000;
     daysToSpoilage = 1 + rand() % 365;
@@ -66,7 +65,6 @@ Node::Node(Data aKey) {
 void BST::insert(const Data& aKey) {
     root = insert(root, aKey);
 }
-
 Node* BST::insert(Node *aNode, const Data& aKey) {
     if (aNode == nullptr) {
         realsize++;
@@ -82,15 +80,23 @@ Node* BST::insert(Node *aNode, const Data& aKey) {
 }
 
 Node *BST::minimum(Node *aNode) {
+    if (aNode == nullptr)
+        return aNode;
     if (aNode->left == nullptr)
         return aNode;
     return minimum(aNode->left);
+}
+Node *BST::maximum(Node *aNode){
+    if (aNode == nullptr)
+        return aNode;
+    if (aNode->right == nullptr)
+        return aNode;
+    return maximum(aNode->right);
 }
 
 void BST::erase(const Data& aKey) {
     root = erase(root, aKey);
 }
-
 Node* BST::erase(Node *aNode, const Data& aKey) {
     if (aNode == nullptr)
         return aNode;
@@ -122,11 +128,12 @@ Node* BST::erase(Node *aNode, const Data& aKey) {
         return aNode;
     }
 }
+
 bool BST::find(const Data& aKey) {
     Node *temp = find(root, aKey);
     if (temp == nullptr)
-        return 0;
-    return 1;
+        return false;
+    return true;
 }
 Node *BST::find(Node *aNode, const Data& aKey) {
     if (aNode == nullptr || aKey  == aNode->data)
@@ -139,7 +146,6 @@ Node *BST::find(Node *aNode, const Data& aKey) {
 void BST::print() {
     print(root);
 }
-
 void BST::print(Node *aNode) {
     if (aNode != nullptr) {
         print(aNode->left);
@@ -148,8 +154,13 @@ void BST::print(Node *aNode) {
     }
 }
 
-int BST::size() {
-    return realsize;
+int BST::size(){
+    return size(root);
+}
+int BST::size(Node *aNode) {
+    if (aNode == nullptr)
+        return 0;
+    return 1 + size(aNode->left) + size(aNode->right);
 }
 
 int BST::findInRange(const Data& aMin, const Data& aMax) {
@@ -157,7 +168,6 @@ int BST::findInRange(const Data& aMin, const Data& aMax) {
     findInRange(root, counter, aMin, aMax);
     return counter;
 }
-
 void BST::findInRange(Node *aNode, int &aCounter, const Data& aMin, const Data& aMax) {
     if (aNode == nullptr)
         return;
@@ -178,9 +188,8 @@ void BST::findInRange(Node *aNode, int &aCounter, const Data& aMin, const Data& 
 int BST::height() {
     return height(root);
 }
-
 int BST::height(Node* aNode) {
-    if (!aNode)
+    if (aNode == nullptr)
         return 0;
     else {
         int left_height = height(aNode->left);
@@ -207,56 +216,58 @@ SplittedBST BST::split(Node *aNode, const Data& aKey) {
         return SplittedBST(temp.left, aNode);
     }
 }
-
 Node *BST::merge(Node *aLeft, Node *aRight) {
     if (aLeft == nullptr)
         return aRight;
     if (aRight == nullptr)
         return aLeft;
-    else if (aLeft->data > aRight->data){
-        aLeft->right = merge(aLeft->right, aRight);
-        return aLeft;
-    }
-    else{
-        aRight->left = merge(aLeft, aRight->left);
-        return aRight;
+    Node *temp = nullptr;
+    temp = insert(temp, minimum(aRight)->data);
+    temp->left = aLeft;
+    temp->right = aRight;
+    temp->right = erase(temp->right, minimum(aRight)->data);
+    return temp;
+}
+
+void BST::deteleTree(Node *aNode){
+    if (aNode != nullptr) {
+        deteleTree(aNode->left);
+        deteleTree(aNode->right);
+        delete aNode;
+        realsize--;
     }
 }
-void BST::deteleTree(Node *aNode, Data aKey){
-    if (aNode != nullptr){
-        aNode = erase(aNode, aKey);
-        deteleTree(aNode, minimum(aNode)->data);
-    }
-}
+
 Node *BST::eraseRange(Node *aNode, const Data& aMin, const Data& aMax) {
     if (aNode == nullptr)
         return aNode;
-    if (aNode->data < aMin) {
-        SplittedBST temp1 = split(aNode, aMin);
-        SplittedBST temp2 = split(temp1.right, aMax);
-        aNode = merge(temp1.left, temp2.right);
-        deteleTree(temp2.left, minimum(temp2.left)->data);
-    }
-
+    SplittedBST temp1 = split(aNode, aMin);
+    SplittedBST temp2 = split(temp1.right, aMax);
+        if (temp2.right != nullptr && minimum(temp2.right)->data == aMax) {
+            temp2.right = erase(temp2.right, aMax);
+        }
+    aNode = merge(temp1.left, temp2.right);
+    deteleTree(temp2.left);
+    return aNode;
 }
 void BST::eraseRange(const Data& aMin, const Data& aMax) {
-    eraseRange(root, aMin, aMax);
+    root = eraseRange(root, aMin, aMax);
 }
 
-void BST::eraseInRange(Node *aNode, const Data& aMin, const Data& aMax) {
-    if (aNode == nullptr)
-        return;
-    if (aNode->data == aMin && aNode->data == aMax) {
-        aNode = erase(aNode, aNode->data);
-        return;
-    }
-    if ((aMin < aNode->data && aNode->data < aMax) || aNode->data == aMax || aNode->data == aMin) {
-        aNode = erase(aNode, aNode->data);
-        eraseInRange(aNode->left, aMin, aMax);
-        eraseInRange(aNode->right, aMin, aMax);
-    }
-    else if (aNode->data < aMin)
-        eraseInRange(aNode->right, aMin, aMax);
-    else eraseInRange(aNode->left, aMin, aMax);
-}
+//void BST::eraseInRange(Node *aNode, const Data& aMin, const Data& aMax) {
+//    if (aNode == nullptr)
+//        return;
+//    if (aNode->data == aMin && aNode->data == aMax) {
+//        aNode = erase(aNode, aNode->data);
+//        return;
+//    }
+//    if ((aMin < aNode->data && aNode->data < aMax) || aNode->data == aMax || aNode->data == aMin) {
+//        aNode = erase(aNode, aNode->data);
+//        eraseInRange(aNode->left, aMin, aMax);
+//        eraseInRange(aNode->right, aMin, aMax);
+//    }
+//    else if (aNode->data < aMin)
+//        eraseInRange(aNode->right, aMin, aMax);
+//    else eraseInRange(aNode->left, aMin, aMax);
+//}
 

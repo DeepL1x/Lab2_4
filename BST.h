@@ -5,6 +5,7 @@
 #ifndef LAB2_4_BST_H
 #define LAB2_4_BST_H
 #include <string>
+#include <iostream>
 
 struct Data{ /*Easter cake*/
     int totalMass;
@@ -40,6 +41,7 @@ struct BST {
     Node *insert (Node *aNode, const Data& aKey);
 
     Node *minimum (Node *aNode);
+    Node *maximum(Node *aNode);
 
     void erase (const Data& aData);
     Node *erase (Node *aNode, const Data& aKey);
@@ -55,8 +57,11 @@ struct BST {
 
     void eraseRange(const Data& aMin, const Data& aMax);
     void eraseInRange(Node *aNode, const Data& aMin, const Data& aMax);
-    void deteleTree(Node *aNode, Data aKey);
+
+    void deteleTree(Node *aNode);
+
     Node *eraseRange(Node *aNode, const Data& aMin, const Data& aMax);
+
     int height();
     int height(Node* aNode);
 
@@ -64,6 +69,7 @@ struct BST {
     Node *merge(Node *aLeft, Node *aRight);
 
     int size();
+    int size(Node *aNode);
 };
 
 #endif //LAB2_4_BST_H
